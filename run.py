@@ -1,11 +1,3 @@
-"""
-run.py — MLOps-style batch job for rolling-mean signal generation.
-
-Usage:
-    python run.py --input data.csv --config config.yaml \
-                  --output metrics.json --log-file run.log
-"""
-
 import argparse
 import io
 import json
@@ -18,9 +10,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
-# ---------------------------------------------------------------------------
 # CLI
-# ---------------------------------------------------------------------------
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -34,9 +24,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-# ---------------------------------------------------------------------------
 # Logging setup
-# ---------------------------------------------------------------------------
 
 def setup_logging(log_file: str) -> logging.Logger:
     logger = logging.getLogger("mlops_job")
@@ -62,9 +50,7 @@ def setup_logging(log_file: str) -> logging.Logger:
     return logger
 
 
-# ---------------------------------------------------------------------------
 # Config loading & validation
-# ---------------------------------------------------------------------------
 
 REQUIRED_CONFIG_FIELDS = {"seed", "window", "version"}
 
@@ -99,9 +85,8 @@ def load_config(config_path: str, logger: logging.Logger) -> dict:
     return cfg
 
 
-# ---------------------------------------------------------------------------
 # Dataset loading & validation
-# ---------------------------------------------------------------------------
+
 
 def load_dataset(input_path: str, logger: logging.Logger) -> pd.DataFrame:
     path = Path(input_path)
@@ -156,9 +141,8 @@ def load_dataset(input_path: str, logger: logging.Logger) -> pd.DataFrame:
     return df
 
 
-# ---------------------------------------------------------------------------
+
 # Signal pipeline
-# ---------------------------------------------------------------------------
 
 def compute_pipeline(df: pd.DataFrame, cfg: dict, logger: logging.Logger) -> pd.DataFrame:
     window = cfg["window"]
@@ -186,9 +170,8 @@ def compute_pipeline(df: pd.DataFrame, cfg: dict, logger: logging.Logger) -> pd.
     return df
 
 
-# ---------------------------------------------------------------------------
+
 # Metrics
-# ---------------------------------------------------------------------------
 
 def compute_metrics(df: pd.DataFrame, cfg: dict, latency_ms: float) -> dict:
     valid_signal = df["signal"].dropna()
@@ -211,9 +194,7 @@ def write_metrics(metrics: dict, output_path: str) -> None:
         json.dump(metrics, f, indent=2)
 
 
-# ---------------------------------------------------------------------------
 # Main
-# ---------------------------------------------------------------------------
 
 def main() -> int:
     args = parse_args()
